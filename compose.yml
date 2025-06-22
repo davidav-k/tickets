@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 services:
@@ -9,16 +10,16 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: keycloak
     ports:
-      - "5433:5432"
+      - "5543:5432"
     volumes:
-      - ./keycloak/data:/var/lib/postgresql/data
+      - ./infrastructure/keycloak/db:/var/lib/postgresql/data
     networks:
       - keycloak_net
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
     container_name: keycloak
-    command: start-dev
+    command: start-dev #--import-realm
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
@@ -30,13 +31,93 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "9090:8080"
+#    volumes:
+#      - ./infrastructure/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
       - postgres
     networks:
       - keycloak_net
+
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.4.0
+  #   container_name: zookeeper
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - "22181:2181"
+  #   networks:
+  #     - platform_net
+
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.4.0
+  #   container_name: kafka
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "29092:29092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #   networks:
+  #     - platform_net
+
+  # api-gateway:
+  #   build: ./backend/api-gateway
+  #   container_name: api_gateway
+  #   ports:
+  #     - "8088:8080"
+  #   networks:
+  #     - platform_net
+  #   depends_on:
+  #     - keycloak
+
+  # ticket-service:
+  #   build: ./backend/ticket-service
+  #   container_name: ticket_service
+  #   ports:
+  #     - "8091:8080"
+  #   networks:
+  #     - platform_net
+  #   depends_on:
+  #     - kafka
+
+  # cashier-service:
+  #   build: ./backend/cashier-service
+  #   container_name: cashier_service
+  #   ports:
+  #     - "8092:8080"
+  #   networks:
+  #     - platform_net
+  #   depends_on:
+  #     - kafka
+
+  # notification-service:
+  #   build: ./backend/notification-service
+  #   container_name: notification_service
+  #   ports:
+  #     - "8093:8080"
+  #   networks:
+  #     - platform_net
+  #   depends_on:
+  #     - kafka
+
+  # scanner-service:
+  #   build: ./backend/scanner-service
+  #   container_name: scanner_service
+  #   ports:
+  #     - "8094:8080"
+  #   networks:
+  #     - platform_net
+  #   depends_on:
+  #     - kafka
 
 volumes:
   postgres_data:
 
 networks:
   keycloak_net:
+    driver: bridge
