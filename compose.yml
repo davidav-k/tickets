@@ -1,6 +1,3 @@
-
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16.1
@@ -65,15 +62,15 @@ services:
   #   networks:
   #     - platform_net
 
-  # api-gateway:
-  #   build: ./backend/api-gateway
-  #   container_name: api_gateway
-  #   ports:
-  #     - "8088:8080"
-  #   networks:
-  #     - platform_net
-  #   depends_on:
-  #     - keycloak
+  api-gateway:
+     build: ./backend/api-gateway
+     container_name: api_gateway
+     ports:
+       - "8088:8080"
+     networks:
+       - keycloak_net
+     depends_on:
+       - keycloak
 
   # ticket-service:
   #   build: ./backend/ticket-service
