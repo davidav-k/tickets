@@ -15,8 +15,8 @@ public class RequestIdFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String requestId = UUID.randomUUID().toString();
-        exchange.getRequest().mutate()
-                .headers(httpHeaders -> httpHeaders.set("X-Request-ID", requestId))
+        exchange = exchange.mutate()
+                .request(request -> request.headers(httpHeaders -> httpHeaders.set("X-Request-ID", requestId)))
                 .build();
         return chain.filter(exchange);
     }
