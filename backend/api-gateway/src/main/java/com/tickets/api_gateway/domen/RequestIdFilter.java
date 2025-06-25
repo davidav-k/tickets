@@ -1,4 +1,4 @@
-package com.tickets.api_gateway.domen;
+package com.tickets.api_gateway.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
