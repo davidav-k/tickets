@@ -6,7 +6,7 @@
   "roles": {
     "realm": [
       {
-        "name": "admin",
+        "name": "ROLE_ADMIN",
         "description": "Realm administrator"
       },
       {
@@ -43,7 +43,7 @@
         }
       ],
       "realmRoles": [
-        "admin"
+        "ROLE_ADMIN"
       ],
       "groups": []
     }

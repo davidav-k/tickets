@@ -39,7 +39,7 @@ Vue Frontend | 5173 (планируется)
 ## Текущий прогресс
 
 1. Keycloak и PostgreSQL настроены через Docker
-2. Realm tickets создан вручную или импортирован
+2. Realm tickets импортирован
 3. Пользователь admin@tickets.local добавлен
 4. Роли admin, ROLE_USER, ROLE_CASHIER определены
 5. Клиенты api-gateway и vue-frontend настроены
@@ -63,15 +63,8 @@ tickets/
 ├── docker-compose.yml
 └── README.md
 
-## Команда запуска базовых сервисов
 
-docker-compose up --build
-
-Keycloak доступен по адресу:
-
+Keycloak:
 http://localhost:9090/admin
-
-Данные для входа (временно):
-
 Username: admin  
-Password: admin
+Password: Password123
