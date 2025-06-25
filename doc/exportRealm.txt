@@ -1,0 +1,12 @@
+экспорт всего realm (tickets)
+Keycloak в Docker:
+docker exec -it keycloak /opt/keycloak/bin/kc.sh export --dir=/opt/keycloak/data/export --realm=tickets
+Извлечь файл из контейнера:
+docker cp keycloak:/opt/keycloak/data/export/tickets-realm.json ./tickets-realm.json
+
+
+получить токен для доступа к API
+mac:
+curl -X POST http://localhost:9090/realms/tickets/protocol/openid-connect/token \  -H "Content-Type: application/x-www-form-urlencoded" \  -d "client_id=api-gateway" \  -d "client_secret=<secret>" \  -d "grant_type=password" \  -d "username=admin@tickets.local" \  -d "password=Password123"
+windows:
+curl -X POST http://localhost:9090/realms/tickets/protocol/openid-connect/token -H "Content-Type: application/x-www-form-urlencoded" -d "client_id=api-gateway" -d "client_secret=<secret>" -d "grant_type=password" -d "username=user@tickets.local" -d "password=Password123"
