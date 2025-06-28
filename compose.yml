@@ -57,7 +57,7 @@ services:
       POSTGRES_USER: ticket_user
       POSTGRES_PASSWORD: ticket_password
     ports:
-      - "5555:5432"
+      - "5432:5432"
     volumes:
       - ./infrastructure/ticket-service/db:/var/lib/postgresql/data
     networks:
@@ -77,9 +77,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://ticket-db:5432/tickets
       SPRING_DATASOURCE_USERNAME: ticket_user
       SPRING_DATASOURCE_PASSWORD: ticket_password
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/tickets
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:9090/realms/tickets
     networks:
       - keycloak_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
