@@ -52,22 +52,18 @@ public class SecurityConfig {
             Collection<GrantedAuthority> defaultAuthorities = defaultConverter.convert(jwt);
 
             Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-            if (resourceAccess == null) {
-                return defaultAuthorities;
-            }
+            if (resourceAccess == null) return defaultAuthorities;
 
             Map<String, Object> apiGateway = (Map<String, Object>) resourceAccess.get("api-gateway");
-            if (apiGateway == null) {
-                return defaultAuthorities;
-            }
+            if (apiGateway == null) return defaultAuthorities;
 
             Collection<String> roles = (Collection<String>) apiGateway.get("roles");
-            if (roles == null) {
-                return defaultAuthorities;
-            }
+            if (roles == null) return defaultAuthorities;
 
             Collection<GrantedAuthority> keycloakAuthorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> role.startsWith("ROLE_")
+                            ? new SimpleGrantedAuthority(role)
+                            : new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
 
             defaultAuthorities.addAll(keycloakAuthorities);

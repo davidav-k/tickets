@@ -1,0 +1,19 @@
+gateway:
+  url: http://api-gateway:8088
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:9090/realms/skeleton
+      client:
+        registration:
+          keycloak:
+            client-id: api-gateway
+            client-secret: OG5hAKsICHG5BDWIBHMIhp1atYfdrAAe # Todo: Use .env file
+            scope: openid,profile,email
+            authorization-grant-type: authorization_code
+        provider:
+          keycloak:
+            issuer-uri: http://host.docker.internal:9090/realms/tickets

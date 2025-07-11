@@ -24,3 +24,4 @@ dist/
 #my
 .env
 infrastructure/keycloak/db
+infrastructure/ticket-service/db

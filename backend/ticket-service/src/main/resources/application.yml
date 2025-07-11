@@ -2,16 +2,11 @@ server:
   port: 8091
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5555/tickets
-    username: ticket_user
-    password: ticket_password
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 20000
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
+  application:
+    name: ticket-service
+  profiles:
+    active: local
+
 
   jpa:
     hibernate:
@@ -22,20 +17,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9090/realms/tickets
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-
-
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+    org.springframework.boot.autoconfigure.security: DEBUG
