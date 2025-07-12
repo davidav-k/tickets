@@ -1,18 +1,38 @@
 package com.tickets.ticket_service.service;
 
 
-import com.tickets.ticket_service.dto.HallDto;
+import com.tickets.ticket_service.domain.CreateHallRequest;
+import com.tickets.ticket_service.domain.HallResponse;
+import com.tickets.ticket_service.dto.UserDTO;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Service interface for managing halls in the ticket service.
+ * Provides methods to create, delete, and retrieve hall information.
+ */
 
 public interface HallService {
 
-    List<HallDto> getAllHalls();
+    /**
+     * Saves a new hall based on the provided request.
+     *
+     * @param request the request containing hall details
+     * @return the saved hall response
+     */
+    HallResponse saveHall(CreateHallRequest request);
 
-    Optional<HallDto> getHallById(Long id);
+    void deleteHall(UUID id);
 
-    HallDto saveHall(HallDto dto);
+    Page<HallResponse> getAllHalls();
 
-    void deleteHall(Long id);
+    HallResponse getHallById(UUID id);
+
+    UserDTO getHallCreator(UUID hallId);
+
+
+
+
+
 }

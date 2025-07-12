@@ -63,7 +63,7 @@ Minimal launch with working security:
    - API calls to api-gateway are made with JWT token
 
 ## Project structure
-
+```
 tickets/
 ├── backend/
 │ ├── api-gateway/
@@ -79,7 +79,7 @@ tickets/
 │ └── realm-export.json
 ├── docker-compose.yml
 └── README.md
-
+```
 ## How to run
 1. run `docker-compose up --build` in the root directory of the project
 2. wait for all services to start (it may take a few minutes)

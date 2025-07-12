@@ -1,8 +1,10 @@
 package com.tickets.ticket_service.exception;
 
 import com.tickets.ticket_service.domain.ApiResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -10,15 +12,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 
 @RestControllerAdvice
-public class ExceptionHandlerAdvice  {
+public class ExceptionHandlerAdvice {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(java.util.stream.Collectors.toMap(
-                        field -> field.getField(),
-                        field -> field.getDefaultMessage(),
+                        FieldError::getField,
+                        error -> {
+                            String message = error.getDefaultMessage();
+                            return message != null ? message : ""; // Replace null with empty string
+                        },
+                        // If there are multiple errors for the same field, keep the last one
                         (a, b) -> b
                 ));
 
