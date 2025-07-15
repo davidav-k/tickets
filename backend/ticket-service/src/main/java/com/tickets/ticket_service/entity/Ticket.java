@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "tickets", indexes = {
@@ -25,7 +24,7 @@ public class Ticket extends BaseEntity{
     private Seat seat;
 
     @Column(nullable = false)
-    private UUID userId; // UUID from Keycloak
+    private String userId;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status;

@@ -1,12 +1,10 @@
 package com.tickets.ticket_service.service;
 
 
-import com.tickets.ticket_service.domain.CreateHallRequest;
-import com.tickets.ticket_service.domain.HallResponse;
-import com.tickets.ticket_service.dto.UserDTO;
+import com.tickets.ticket_service.dto.CreateHallRequest;
+import com.tickets.ticket_service.dto.HallResponse;
+import com.tickets.ticket_service.dto.UserResponse;
 import org.springframework.data.domain.Page;
-
-import java.util.UUID;
 
 /**
  * Service interface for managing halls in the ticket service.
@@ -15,21 +13,15 @@ import java.util.UUID;
 
 public interface HallService {
 
-    /**
-     * Saves a new hall based on the provided request.
-     *
-     * @param request the request containing hall details
-     * @return the saved hall response
-     */
     HallResponse saveHall(CreateHallRequest request);
 
-    void deleteHall(UUID id);
+    void deleteHall(Long id);
 
     Page<HallResponse> getAllHalls();
 
-    HallResponse getHallById(UUID id);
+    HallResponse getHallById(Long id);
 
-    UserDTO getHallCreator(UUID hallId);
+    UserResponse getHallCreator(Long hallId);
 
 
 

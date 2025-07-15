@@ -1,20 +1,22 @@
 package com.tickets.ticket_service.service;
 
-import com.tickets.ticket_service.dto.SeatDto;
-import com.tickets.ticket_service.entity.Seat;
+import com.tickets.ticket_service.dto.SeatRequest;
+import com.tickets.ticket_service.dto.SeatResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+/**
+ * Service interface for managing seats in a hall.
+ * Provides methods to retrieve, create, and delete seats.
+ */
 
 public interface SeatService {
 
-    Page<SeatDto> getAllSeats(Pageable pageable);
+    Page<SeatResponse> getAllSeatsByHall(Long hallId, Pageable pageable);
 
-    SeatDto getSeatById(Long id);
+    SeatResponse getSeatById(Long id);
 
-    SeatDto saveSeat(SeatDto dto);
+    SeatResponse createSeat(SeatRequest seatRequest);
 
     void deleteSeat(Long id);
 }

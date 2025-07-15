@@ -1,8 +1,8 @@
 package com.tickets.ticket_service.service.impl;
 
-import com.tickets.ticket_service.domain.CreateHallRequest;
-import com.tickets.ticket_service.domain.HallResponse;
-import com.tickets.ticket_service.dto.UserDTO;
+import com.tickets.ticket_service.dto.CreateHallRequest;
+import com.tickets.ticket_service.dto.HallResponse;
+import com.tickets.ticket_service.dto.UserResponse;
 import com.tickets.ticket_service.entity.Hall;
 import com.tickets.ticket_service.entity.User;
 import com.tickets.ticket_service.repository.HallRepository;
@@ -11,10 +11,10 @@ import com.tickets.ticket_service.service.HallService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -45,22 +45,43 @@ public class HallServiceImpl implements HallService {
     }
 
     @Override
-    public void deleteHall(UUID id) {
+    public void deleteHall(Long id) {
+
+        Hall hall = hallRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Hall not found"));
+
+        hallRepository.delete(hall);
 
     }
 
     @Override
     public Page<HallResponse> getAllHalls() {
-        return null;
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Hall> halls = hallRepository.findAll(pageable);
+        return halls.map(hall -> new HallResponse(
+                hall.getId(),
+                hall.getName(),
+                hall.getTotalRows(),
+                hall.getTotalSeatsPerRow()
+        ));
+
     }
 
     @Override
-    public HallResponse getHallById(UUID id) {
-        return null;
+    public HallResponse getHallById(Long id) {
+        Hall hall = hallRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Hall not found"));
+
+        return new HallResponse(
+                hall.getId(),
+                hall.getName(),
+                hall.getTotalRows(),
+                hall.getTotalSeatsPerRow()
+        );
     }
 
     @Override
-    public UserDTO getHallCreator(UUID hallId) {
+    public UserResponse getHallCreator(Long hallId) {
         Hall hall = hallRepository.findById(hallId)
                 .orElseThrow(() -> new EntityNotFoundException("Hall not found"));
 
@@ -68,10 +89,10 @@ public class HallServiceImpl implements HallService {
             return null;
         }
 
-        User user = userRepository.findById(hall.getCreatedBy())
+        User user = userRepository.findByKeycloakId(hall.getCreatedBy())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return new UserDTO(
+        return new UserResponse(
                 user.getUsername(),
                 user.getEmail(),
                 user.getFirstName(),

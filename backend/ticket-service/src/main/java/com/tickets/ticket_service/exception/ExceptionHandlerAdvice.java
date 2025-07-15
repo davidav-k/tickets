@@ -1,7 +1,6 @@
 package com.tickets.ticket_service.exception;
 
 import com.tickets.ticket_service.domain.ApiResponse;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

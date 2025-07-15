@@ -1,4 +1,4 @@
-package com.tickets.ticket_service.domain;
+package com.tickets.ticket_service.dto;
 
 
 import jakarta.validation.constraints.NotBlank;

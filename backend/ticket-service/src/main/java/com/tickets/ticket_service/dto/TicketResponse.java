@@ -1,16 +1,15 @@
-package com.tickets.ticket_service.domain;
+package com.tickets.ticket_service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Schema(description = "Response object for a ticket")
 public record TicketResponse(
-        UUID id,
-        UUID eventId,
+        Long id,
+        Long eventId,
         String eventTitle,
-        UUID hallId,
+        Long hallId,
         String hallName,
         LocalDateTime eventTime,
         LocalDateTime purchaseDate,

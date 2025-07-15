@@ -1,24 +1,29 @@
 package com.tickets.ticket_service.service;
 
 
-import com.tickets.ticket_service.domain.CreateTicketRequest;
-import com.tickets.ticket_service.domain.TicketResponse;
+import com.tickets.ticket_service.dto.CreateTicketRequest;
+import com.tickets.ticket_service.dto.TicketResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.security.Principal;
-import java.util.UUID;
+/**
+ * TicketService interface defines the contract for ticket-related operations.
+ * It includes methods for creating, retrieving, and deleting tickets.
+ */
 
 public interface TicketService {
 
 
-    TicketResponse createTicket(@Valid CreateTicketRequest request, Principal principal);
+    TicketResponse createTicket(@Valid CreateTicketRequest request);
 
-    TicketResponse getTicketById(UUID id);
+    TicketResponse getTicketById(Long id);
 
-    Page<TicketResponse> getTicketsByUserId(UUID userId, Pageable pageable);
+    Page<TicketResponse> getTicketsByUserId(Long userId, Pageable pageable);
 
-    Page<TicketResponse> getTicketsByEventId(UUID eventId, Pageable pageable);
+    Page<TicketResponse> getTicketsByEventId(Long eventId, Pageable pageable);
+
+    void deleteTicket(Long id);
+
 
 }

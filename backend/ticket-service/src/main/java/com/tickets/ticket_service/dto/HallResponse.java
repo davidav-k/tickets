@@ -1,9 +1,7 @@
-package com.tickets.ticket_service.domain;
-
-import java.util.UUID;
+package com.tickets.ticket_service.dto;
 
 public record HallResponse(
-        UUID id,
+        Long id,
         String name,
         int totalRows,
         int totalSeatsPerRow

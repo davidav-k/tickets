@@ -1,8 +1,8 @@
 package com.tickets.ticket_service.controller;
 
 import com.tickets.ticket_service.domain.ApiResponse;
-import com.tickets.ticket_service.domain.CreateTicketRequest;
-import com.tickets.ticket_service.domain.TicketResponse;
+import com.tickets.ticket_service.dto.CreateTicketRequest;
+import com.tickets.ticket_service.dto.TicketResponse;
 import com.tickets.ticket_service.service.TicketService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.UUID;
+
 
 
 
@@ -35,7 +35,7 @@ public class TicketController {
             @Valid @RequestBody CreateTicketRequest request,
             Principal principal
     ) {
-        TicketResponse ticket = ticketService.createTicket(request, principal);
+        TicketResponse ticket = ticketService.createTicket(request);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets", "Ticket created successfully", ticket)
         );
@@ -44,7 +44,7 @@ public class TicketController {
     @Schema(description = "Request to get a ticket by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
-    public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable UUID id, JwtAuthenticationToken jwtToken) {
+    public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable Long id, JwtAuthenticationToken jwtToken) {
         log.info("User ID: {}", jwtToken.getName());
         log.info("Roles: {}", jwtToken.getAuthorities());
         log.info("Token claims: {}", jwtToken.getTokenAttributes());
@@ -57,7 +57,7 @@ public class TicketController {
     @Schema(description = "Request to get all tickets by user ID with pagination")
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByUserId(
-            @PathVariable UUID userId,
+            @PathVariable Long userId,
             Pageable pageable
     ) {
         Page<TicketResponse> tickets = ticketService.getTicketsByUserId(userId, pageable);
@@ -69,7 +69,7 @@ public class TicketController {
     @Schema(description = "Request to get all tickets by event ID with pagination")
     @GetMapping("/event/{eventId}")
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByEventId(
-            @PathVariable UUID eventId,
+            @PathVariable Long eventId,
             Pageable pageable
     ) {
         Page<TicketResponse> tickets = ticketService.getTicketsByEventId(eventId, pageable);
