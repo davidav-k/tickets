@@ -1,7 +1,7 @@
 package com.tickets.ticket_service.controller;
 
 import com.tickets.ticket_service.domain.ApiResponse;
-import com.tickets.ticket_service.dto.CreateTicketRequest;
+import com.tickets.ticket_service.dto.TicketRequest;
 import com.tickets.ticket_service.dto.TicketResponse;
 import com.tickets.ticket_service.service.TicketService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,9 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-
 
 
 
@@ -32,9 +29,9 @@ public class TicketController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
     public ResponseEntity<ApiResponse<TicketResponse>> createTicket(
-            @Valid @RequestBody CreateTicketRequest request,
-            Principal principal
+            @Valid @RequestBody TicketRequest request
     ) {
+
         TicketResponse ticket = ticketService.createTicket(request);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets", "Ticket created successfully", ticket)
@@ -45,9 +42,7 @@ public class TicketController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
     public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable Long id, JwtAuthenticationToken jwtToken) {
-        log.info("User ID: {}", jwtToken.getName());
-        log.info("Roles: {}", jwtToken.getAuthorities());
-        log.info("Token claims: {}", jwtToken.getTokenAttributes());
+
         TicketResponse ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets/" + id, "Ticket found", ticket)
@@ -56,8 +51,9 @@ public class TicketController {
 
     @Schema(description = "Request to get all tickets by user ID with pagination")
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByUserId(
-            @PathVariable Long userId,
+            @PathVariable String userId,
             Pageable pageable
     ) {
         Page<TicketResponse> tickets = ticketService.getTicketsByUserId(userId, pageable);

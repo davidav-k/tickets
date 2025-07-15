@@ -31,7 +31,7 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<EventResponse>> getEventById(@PathVariable Long id) {
         log.info("Fetching event with ID: {}", id);
-        EventResponse eventResponse = eventService.getEventById(id);
+        EventResponse eventResponse = eventService.getEventResponseById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/events/" + id, "Event retrieved successfully", eventResponse)
         );

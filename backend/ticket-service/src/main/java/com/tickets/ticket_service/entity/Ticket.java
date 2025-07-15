@@ -23,12 +23,13 @@ public class Ticket extends BaseEntity{
     @ManyToOne
     private Seat seat;
 
-    @Column(nullable = false)
-    private String userId;
+    @ManyToOne
+    private LocalUser user;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
+    @Column(nullable = false)
     private LocalDateTime purchaseDate;
 }
 

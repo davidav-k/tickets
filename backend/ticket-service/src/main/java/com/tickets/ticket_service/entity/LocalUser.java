@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity{
+public class LocalUser extends BaseEntity{
 
     @Column(name = "keycloak_id", nullable = false, unique = true)
     private String keycloakId;

@@ -1,7 +1,7 @@
 package com.tickets.ticket_service.config;
 
-import com.tickets.ticket_service.entity.User;
-import com.tickets.ticket_service.repository.UserRepository;
+import com.tickets.ticket_service.entity.LocalUser;
+import com.tickets.ticket_service.repository.LocalUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class KeycloakUserSyncFilter extends OncePerRequestFilter {
-    private final UserRepository userRepository;
+    private final LocalUserRepository userRepository;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
@@ -37,7 +37,7 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
             if (subject != null) {
                 userRepository.findByKeycloakId(subject)
                     .orElseGet(() -> {
-                        User user = User.builder()
+                        LocalUser user = LocalUser.builder()
                             .keycloakId(subject)
                             .username(token.getToken().getClaimAsString("preferred_username"))
                             .email(token.getToken().getClaimAsString("email"))

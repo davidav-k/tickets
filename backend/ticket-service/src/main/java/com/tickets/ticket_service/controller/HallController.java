@@ -1,7 +1,7 @@
 package com.tickets.ticket_service.controller;
 
 import com.tickets.ticket_service.domain.ApiResponse;
-import com.tickets.ticket_service.dto.CreateHallRequest;
+import com.tickets.ticket_service.dto.HallRequest;
 import com.tickets.ticket_service.dto.HallResponse;
 import com.tickets.ticket_service.dto.UserResponse;
 import com.tickets.ticket_service.service.HallService;
@@ -25,7 +25,7 @@ public class HallController {
     @Schema(description = "Request to create a new hall")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<HallResponse>> createHall(@Valid @RequestBody CreateHallRequest request) {
+    public ResponseEntity<ApiResponse<HallResponse>> createHall(@Valid @RequestBody HallRequest request) {
         log.info("Creating a new hall named: {}", request.name());
         HallResponse hallResponse = hallService.saveHall(request);
 
@@ -50,7 +50,7 @@ public class HallController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
     public ResponseEntity<ApiResponse<Page<HallResponse>>> getAllHalls(){
         log.info("Fetching all halls");
-        Page<HallResponse> halls = hallService.getAllHalls();
+        Page<HallResponse> halls = hallService.getAllHallsResponse();
         return ResponseEntity.ok(
                 ApiResponse.success("/api/halls", "All halls retrieved successfully", halls)
         );
@@ -62,7 +62,7 @@ public class HallController {
     public ResponseEntity<ApiResponse<HallResponse>> getHallById(@PathVariable Long id) {
         log.info("Fetching hall with ID: {}", id);
 
-        HallResponse hall = hallService.getHallById(id);
+        HallResponse hall = hallService.getHallResponseById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/halls/" + id, "Hall found", hall)
         );

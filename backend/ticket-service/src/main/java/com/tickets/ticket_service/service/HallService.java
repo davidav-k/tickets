@@ -1,9 +1,10 @@
 package com.tickets.ticket_service.service;
 
 
-import com.tickets.ticket_service.dto.CreateHallRequest;
+import com.tickets.ticket_service.dto.HallRequest;
 import com.tickets.ticket_service.dto.HallResponse;
 import com.tickets.ticket_service.dto.UserResponse;
+import com.tickets.ticket_service.entity.Hall;
 import org.springframework.data.domain.Page;
 
 /**
@@ -13,13 +14,15 @@ import org.springframework.data.domain.Page;
 
 public interface HallService {
 
-    HallResponse saveHall(CreateHallRequest request);
+    HallResponse saveHall(HallRequest request);
 
     void deleteHall(Long id);
 
-    Page<HallResponse> getAllHalls();
+    Page<HallResponse> getAllHallsResponse();
 
-    HallResponse getHallById(Long id);
+    HallResponse getHallResponseById(Long id);
+
+    Hall getHallById(Long id);
 
     UserResponse getHallCreator(Long hallId);
 

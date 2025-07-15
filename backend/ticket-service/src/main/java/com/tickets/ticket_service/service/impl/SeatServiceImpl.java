@@ -1,10 +1,10 @@
 package com.tickets.ticket_service.service.impl;
 
-import com.tickets.ticket_service.dto.SeatRequest;
 import com.tickets.ticket_service.dto.SeatResponse;
 import com.tickets.ticket_service.entity.Seat;
 import com.tickets.ticket_service.repository.HallRepository;
 import com.tickets.ticket_service.repository.SeatRepository;
+import com.tickets.ticket_service.service.HallService;
 import com.tickets.ticket_service.service.SeatService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class SeatServiceImpl implements SeatService {
 
     private  final SeatRepository seatRepository;
-    private final HallRepository hallRepository;
+    private final HallService hallService;
 
     @Override
     public Page<SeatResponse> getAllSeatsByHall(Long hallId, Pageable pageable) {
@@ -46,23 +46,18 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public SeatResponse createSeat(SeatRequest seatRequest) {
+    public Seat createSeat(Long hallId, int rowNumber, int seatNumber) {
+        if(seatRepository.existsByHallIdAndRowNumberAndSeatNumber(hallId, rowNumber, seatNumber)) {
+            throw new IllegalArgumentException("Seat already exists in hall with id: " + hallId + ", row: " + rowNumber + ", seat: " + seatNumber);
+        }
 
         Seat seat = Seat.builder()
-                .rowNumber(seatRequest.rowNumber())
-                .seatNumber(seatRequest.seatNumber())
-                .hall(hallRepository.findById(seatRequest.hallId())
-                        .orElseThrow(() -> new EntityNotFoundException("Hall not found with id: " + seatRequest.hallId())))
+                .rowNumber(rowNumber)
+                .seatNumber(seatNumber)
+                .hall(hallService.getHallById(hallId))
                 .build();
 
-        Seat savedSeat = seatRepository.save(seat);
-
-        return new SeatResponse(
-                savedSeat.getId(),
-                savedSeat.getRowNumber(),
-                savedSeat.getSeatNumber(),
-                savedSeat.getHall().getId()
-        );
+        return seatRepository.save(seat);
     }
 
     @Override
@@ -72,6 +67,12 @@ public class SeatServiceImpl implements SeatService {
 
         seatRepository.delete(seat);
 
+    }
+
+    @Override
+    public boolean existsByHallIdAndRowAndSeat(Long hallId, Integer row, Integer seat) {
+
+        return seatRepository.existsByHallIdAndRowNumberAndSeatNumber(hallId, row, seat);
     }
 
 }

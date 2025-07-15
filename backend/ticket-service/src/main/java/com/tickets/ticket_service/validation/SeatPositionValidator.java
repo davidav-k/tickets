@@ -4,11 +4,11 @@ import com.tickets.ticket_service.entity.Seat;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-class SeatPositionValidator implements ConstraintValidator<ValidSeatPosition, Seat> {
+public class SeatPositionValidator implements ConstraintValidator<ValidSeatPosition, Seat> {
     @Override
     public boolean isValid(Seat seat, ConstraintValidatorContext context) {
         if (seat == null || seat.getHall() == null) {
-            return true; // Skip validation if seat or hall is null
+            return true;
         }
 
         return seat.getRowNumber() <= seat.getHall().getTotalRows() &&

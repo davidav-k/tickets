@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    Page<Ticket> findByUserId(Long userId, Pageable pageable);
+    Page<Ticket> findByUserId(String userId, Pageable pageable);
 
     Page<Ticket> findByEventId(Long eventId, Pageable pageable);
 

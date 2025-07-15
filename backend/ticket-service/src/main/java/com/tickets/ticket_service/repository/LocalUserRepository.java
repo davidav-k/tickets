@@ -1,11 +1,11 @@
 package com.tickets.ticket_service.repository;
 
-import com.tickets.ticket_service.entity.User;
+import com.tickets.ticket_service.entity.LocalUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface LocalUserRepository extends JpaRepository<LocalUser, Long> {
     /**
      * Finds a user by their Keycloak ID.
      *
@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return an Optional containing the User if found, or empty if not found
      */
 
-    Optional<User> findByKeycloakId(String keycloakId);
+    Optional<LocalUser> findByKeycloakId(String keycloakId);
 
     boolean existsByKeycloakId(String keycloakId);
 
