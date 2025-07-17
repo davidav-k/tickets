@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,20 +30,11 @@ public class HallController {
         log.info("Creating a new hall named: {}", request.name());
         HallResponse hallResponse = hallService.saveHall(request);
 
-        return ResponseEntity.ok(
-                ApiResponse.success("/api/halls", "Hall created successfully", hallResponse)
-        );
-    }
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ApiResponse.success("/tickets/halls", "Hall created successfully", hallResponse));
 
-    @Schema(description = "Request to delete a hall by ID")
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<String>> deleteHall(@PathVariable Long id) {
-        log.info("Deleting hall with ID: {}", id);
-        hallService.deleteHall(id);
-        return ResponseEntity.ok(
-                ApiResponse.success("/api/halls", "Hall deleted successfully", "Hall with ID " + id + " has been deleted")
-        );
     }
 
     @Schema(description = "Request to get all halls")
@@ -78,6 +70,15 @@ public class HallController {
        );
    }
 
-
+    @Schema(description = "Request to delete a hall by ID")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteHall(@PathVariable Long id) {
+        log.info("Deleting hall with ID: {}", id);
+        hallService.deleteHall(id);
+        return ResponseEntity.ok(
+                ApiResponse.success("/api/halls", "Hall deleted successfully", "Hall with ID " + id + " has been deleted")
+        );
+    }
 
 }
