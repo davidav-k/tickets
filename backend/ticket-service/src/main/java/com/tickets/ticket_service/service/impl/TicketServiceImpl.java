@@ -49,7 +49,7 @@ public class TicketServiceImpl implements TicketService {
             log.warn("Authentication is not a JwtAuthenticationToken");
         }
 
-        if (userId.equals("null") || userId.equals("anonymous") || userId.isEmpty()) {
+        if (userId.equals(NULL_USER_ID) || userId.equals(DEFAULT_USER_ID) || userId.isEmpty()) {
             throw new TicketServiceException("The user is not authenticated");
         }
         Event event = eventService.getEventById(request.eventId());
