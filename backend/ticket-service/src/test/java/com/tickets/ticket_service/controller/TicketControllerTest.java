@@ -44,7 +44,7 @@ class TicketControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Здесь можно добавить общие настройки для тестов, если нужно
+        // Common test configurations can be added here if needed
     }
 
     @Test
