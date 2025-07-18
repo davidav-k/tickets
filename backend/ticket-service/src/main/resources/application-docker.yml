@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:9090/realms/skeleton
+          issuer-uri: http://keycloak:9090/realms/tickets
       client:
         registration:
           keycloak:
