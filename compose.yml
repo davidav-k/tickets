@@ -29,7 +29,6 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "9090:8080"
-      - "8080:8080"
 #    volumes:
 #      - ./infrastructure/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
