@@ -1,0 +1,20 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+#          issuer-uri: http://keycloak:8080/realms/tickets
+          issuer-uri: http://host.docker.internal:9090/realms/tickets
+
+
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: ticket-service
+          uri: http://ticket-service:8091
+          predicates:
+            - Path=/api/tickets/**
+          filters:
+            - StripPrefix=1

@@ -1,0 +1,14 @@
+gateway:
+  url: http://localhost:8088
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tickets
+    username: ticket_user
+    password: ticket_password
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/tickets
