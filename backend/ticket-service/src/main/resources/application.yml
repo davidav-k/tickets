@@ -1,0 +1,20 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: ticket-service
+  profiles:
+    active: local
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.boot.autoconfigure.security: DEBUG
