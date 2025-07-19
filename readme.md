@@ -1,100 +1,90 @@
-# tickets
+# Tickets Service - v0.1.0-beta
 
-A microservice application for managing event ticket sales. The main focus is on security, scalability and event architecture.
+## Overview
+Tickets is a microservice-based application for managing event ticket sales with a focus on security, scalability, and event-driven architecture.
 
-## Architecture
+## Features in v0.1.0-beta
+This beta release focuses on establishing the security infrastructure:
 
-1. Keycloak — user authentication and authorization + PostgreSQL — user data storage
-2. Spring Boot microservices:
-   - api-gateway — routing, filtering, JWT verification
-   - ticket-service — ticket business logic + PostgreSQL for tickets data storage
-   - cashier-service — ticket sales and cancellation
-   - notification-service — sending notifications
-   - scanner-service — ticket validation and redemption
-3. Kafka — event broker (ticket purchase, notifications, etc.)
-4. Vue frontend — user interface
-5. Centralized logging via Kafka
+- User authentication via Keycloak
+- JWT token validation
+- Role-based access control
+- Basic API gateway routing
+- Initial ticket service functionality
+- Role-based access control for ticket management
+- Frontend authentication flow
 
-## Goal
+## System Requirements
+- Docker and Docker Compose
+- Java 17+
+- Maven 3.8+
 
-Minimal launch with working security:
+## Installation and Setup
 
-1. Authorization via Keycloak
-2. JWT verification in api-gateway
-3. Secure REST endpoints in ticket-service
-4. Authorization and authentication via frontend
 
-## Ports
+1. Start the infrastructure services:
+   ```bash
+   docker-compose up --build
+   ```
+2. Run the local services:
+   - API Gateway
+   - Ticket Service
 
-| Service                | Port |
-|------------------------|------|
-| Keycloak               | 9090 |
-| PostgreSQL for users   | 5543 |
-| PostgreSQL for tickets | 5432 |
-| API Gateway            | 8088 |
-| Ticket Service         | 8091 |
-| Vue Frontend           | 5173 |
+## Services
 
-## Current progress
+| Service                | URL                    | Port | Description                          |
+|--------------------------|------------------------|------|--------------------------------------|
+| Keycloak                | http://localhost:9090  | 9090 | Authentication server                |
+| Keycloak Admin Console  | http://localhost:9090/admin | 9090 | Admin: admin / Password: admin  |
+| PostgreSQL (users)      | -                      | 5543 | Keycloak user database              |
+| PostgreSQL (tickets)    | -                      | 5432 | Tickets database                     |
+| API Gateway             | http://localhost:8088  | 8088 | Routing and security                |
+| Ticket Service          | http://localhost:8091  | 8091 | Core ticket functionality           |
+| Vue Frontend            | http://localhost:5173  | 5173 | User interface                      |
 
-1. Keycloak:
-   - Keycloak (port 9090) is configured with PostgreSQL as a database (port 5543) with Docker
-   - Realm "tickets" is created in Keycloak
-   - Client "api-gateway" is configured with access type confidential
-   - Client "vue-frontend" is configured with access type public
-   - Users:
-   - "admin@tickets.local", password "Password123" has ROLE_ADMIN
-   - "cashier@tickets.local", password "Password123" has ROLE_CASHIER
-   - "user@tickets.local", password "Password123" has ROLE_USER
-2. API Gateway:
-   - is configured to use Keycloak for authentication
-   - JWT verification is implemented
-   - routes to ticket-service are set up
-3. Ticket Service:
-   - is configured to use Keycloak for authentication
-   - secure REST endpoints are implemented
-   - PostgreSQL for tickets data is running on port 5432
-   - JWT verification is implemented
-   - roles are checked in endpoints
-4. Next step Vue Frontend:
-   - is configured to use Keycloak for authentication
-   - login and registration forms are implemented
-   - JWT token is stored in local storage
-   - API calls to api-gateway are made with JWT token
+## Test Users
 
-## Project structure
+| Username               | Password     | Role         |
+|------------------------|--------------|--------------|
+| admin@tickets.local    | Password123  | ROLE_ADMIN   |
+| cashier@tickets.local  | Password123  | ROLE_CASHIER |
+| user@tickets.local     | Password123  | ROLE_USER    |
+
+## Current Limitations
+- Limited ticket management functionality
+- No payment processing
+- No notification service integration
+- Basic frontend with authentication only
+
+## Upcoming Features
+- Frontend UI
+- Complete ticket CRUD operations
+- Payment processing
+- Email notifications
+- Ticket scanning and validation
+- Advanced reporting
+- Cashier service for ticket sales
+- Notification service for alerts and updates
+- Scanner service for ticket validation
+
+## Project Structure
 ```
 tickets/
 ├── backend/
-│ ├── api-gateway/
-│ ├── ticket-service/
-│ ├── cashier-service/
-│ ├── notification-service/
-│ └── scanner-service/
+│   ├── api-gateway/
+│   ├── ticket-service/
+│   ├── cashier-service/ (planned)
+│   ├── notification-service/ (planned)
+│   └── scanner-service/ (planned)
 ├── frontend/
-│ └── vue-frontend/
+│   └── vue-frontend/
 ├── infrastructure/
-│ └── keycloak/
-│ ├── db/
-│ └── realm-export.json
+│   └── keycloak/
+│       ├── db/
+│       └── realm-export.json
 ├── docker-compose.yml
 └── README.md
 ```
-## How to run
-1. run `docker-compose up --build` in the root directory of the project
-2. wait for all services to start (it may take a few minutes)
-3. run local API Gateway, Ticket Service 
 
-#### Links:
-| service        | link                  |
-|----------------|-----------------------|
-| Keycloak       | http://localhost:9090 |
-| API Gateway    | http://localhost:8088 |
-| Ticket Service | http://localhost:8091 |
-| Vue Frontend   | http://localhost:5173 |
-
----
-#### Keycloak Admin Console:
-http://localhost:9090/admin
-Username: admin
-Password: admin
+## License
+Proprietary - All rights reserved
