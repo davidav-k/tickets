@@ -31,6 +31,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
 
+    private static final String NULL_USER_ID = "null";
+    private static final String DEFAULT_USER_ID = "anonymous";
+
     private final TicketRepository ticketRepository;
     private final EventService eventService;
     private final SeatService seatService;

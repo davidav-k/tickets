@@ -25,3 +25,4 @@ dist/
 .env
 infrastructure/keycloak/db
 infrastructure/ticket-service/db
+infrastructure/event-service/db

@@ -4,8 +4,8 @@ gateway:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/tickets
-    username: ticket_user
-    password: ticket_password
+    username: ${TICKET_DB_USER}
+    password: ${TICKET_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   security:
     oauth2:

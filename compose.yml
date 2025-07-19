@@ -50,6 +50,20 @@ services:
     networks:
       - keycloak_net
 
+  event-db:
+    image: postgres:16.1
+    container_name: event_postgres
+    environment:
+      POSTGRES_DB: ${EVENT_DB_NAME}
+      POSTGRES_USER: ${EVENT_DB_USER}
+      POSTGRES_PASSWORD: ${EVENT_DB_PASSWORD}
+    ports:
+      - "5532:5432"
+    volumes:
+      - ./infrastructure/event-service/db:/var/lib/postgresql/data
+    networks:
+      - keycloak_net
+
 #  api-gateway:
 #    container_name: api_gateway
 #    build:
