@@ -5,5 +5,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Enumeration representing the status of a ticket")
 public enum TicketStatus {
-    ACTIVE, CANCELLED, USED
+    ACTIVE, CANCELLED, USED, RESERVED;
 }

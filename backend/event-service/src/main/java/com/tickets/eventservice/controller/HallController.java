@@ -1,10 +1,11 @@
-package com.tickets.ticket_service.controller;
+package com.tickets.eventservice.controller;
 
-import com.tickets.ticket_service.domain.ApiResponse;
-import com.tickets.ticket_service.dto.HallRequest;
-import com.tickets.ticket_service.dto.HallResponse;
-import com.tickets.ticket_service.dto.UserResponse;
-import com.tickets.ticket_service.service.HallService;
+
+import com.tickets.eventservice.domain.ApiResponse;
+import com.tickets.eventservice.dto.HallRequest;
+import com.tickets.eventservice.dto.HallResponse;
+import com.tickets.eventservice.dto.UserResponse;
+import com.tickets.eventservice.service.HallService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/tickets/halls")
+@RequestMapping("/events/halls")
 @RequiredArgsConstructor
 public class HallController {
 
@@ -40,7 +41,7 @@ public class HallController {
     @Schema(description = "Request to get all halls")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
-    public ResponseEntity<ApiResponse<Page<HallResponse>>> getAllHalls(){
+    public ResponseEntity<ApiResponse<Page<HallResponse>>> getAllHalls() {
         log.info("Fetching all halls");
         Page<HallResponse> halls = hallService.getAllHallsResponse();
         return ResponseEntity.ok(
@@ -61,15 +62,6 @@ public class HallController {
 
     }
 
-   @GetMapping("/{id}/creator")
-   @PreAuthorize("hasRole('ADMIN')")
-   public ResponseEntity<ApiResponse<UserResponse>> getHallCreator(@PathVariable Long id) {
-       UserResponse creator = hallService.getHallCreator(id);
-       return ResponseEntity.ok(
-               ApiResponse.success("/tickets/halls/" + id + "/creator", "Hall creator found", creator)
-       );
-   }
-
     @Schema(description = "Request to delete a hall by ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -81,4 +73,24 @@ public class HallController {
         );
     }
 
+    @Schema(description = "Request to update a hall by ID")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<HallResponse>> updateHall(@PathVariable Long id, @Valid @RequestBody HallRequest request) {
+        log.info("Updating hall with ID: {}", id);
+        HallResponse updatedHall = hallService.updateHall(id, request);
+        return ResponseEntity.ok(
+                ApiResponse.success("/api/halls/" + id, "Hall updated successfully", updatedHall)
+        );
+    }
+
+    @Schema(description = "Request to get the creator of a hall by ID")
+    @GetMapping("/{id}/creator")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<UserResponse>> getHallCreator(@PathVariable Long id) {
+        UserResponse creator = hallService.getHallCreator(id);
+        return ResponseEntity.ok(
+                ApiResponse.success("/tickets/halls/" + id + "/creator", "Hall creator found", creator)
+        );
+    }
 }

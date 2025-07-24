@@ -1,10 +1,11 @@
-package com.tickets.ticket_service.service;
+package com.tickets.eventservice.service;
 
 
-import com.tickets.ticket_service.dto.HallRequest;
-import com.tickets.ticket_service.dto.HallResponse;
-import com.tickets.ticket_service.dto.UserResponse;
-import com.tickets.ticket_service.entity.Hall;
+
+import com.tickets.eventservice.dto.HallRequest;
+import com.tickets.eventservice.dto.HallResponse;
+import com.tickets.eventservice.dto.UserResponse;
+import com.tickets.eventservice.entity.Hall;
 import org.springframework.data.domain.Page;
 
 /**
@@ -23,6 +24,8 @@ public interface HallService {
     HallResponse getHallResponseById(Long id);
 
     Hall getHallById(Long id);
+
+    HallResponse updateHall(Long id, HallRequest hallRequest);
 
     UserResponse getHallCreator(Long hallId);
 

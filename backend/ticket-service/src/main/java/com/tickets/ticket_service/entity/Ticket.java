@@ -17,20 +17,17 @@ import java.time.LocalDateTime;
 @Builder
 public class Ticket extends BaseEntity{
 
-    @ManyToOne(optional = false)
-    private Event event;
+    private Long eventId;
 
-    @ManyToOne
-    private Seat seat;
+    private int row;
+    private int seat;
 
-    @ManyToOne
-    private LocalUser user;
+    private LocalDateTime purchaseDate;
+    private String holderFullName;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    @Column(nullable = false)
-    private LocalDateTime purchaseDate;
 }
 
 

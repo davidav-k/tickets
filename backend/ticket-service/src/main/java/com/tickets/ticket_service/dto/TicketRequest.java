@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Request to create a new ticket")
 public record TicketRequest(
         @NotNull Long eventId,
-        @NotNull Integer row,
-        @NotNull Integer seat,
+        @NotNull int row,
+        @NotNull int seat,
         @NotBlank String firstName,
         @NotBlank String lastName
 ) {}

@@ -1,4 +1,4 @@
-package com.tickets.ticket_service.dto;
+package com.tickets.eventservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,126 +1,110 @@
 package com.tickets.ticket_service.service.impl;
 
 import com.tickets.ticket_service.domain.TicketStatus;
+import com.tickets.ticket_service.dto.EventResponse;
 import com.tickets.ticket_service.dto.TicketRequest;
 import com.tickets.ticket_service.dto.TicketResponse;
-import com.tickets.ticket_service.entity.Event;
-import com.tickets.ticket_service.entity.Seat;
+import com.tickets.ticket_service.dto.mapper.TicketMapper;
 import com.tickets.ticket_service.entity.Ticket;
-import com.tickets.ticket_service.entity.LocalUser;
 import com.tickets.ticket_service.exception.TicketServiceException;
 import com.tickets.ticket_service.repository.TicketRepository;
-import com.tickets.ticket_service.service.EventService;
-import com.tickets.ticket_service.service.LocalUserService;
-import com.tickets.ticket_service.service.SeatService;
+import com.tickets.ticket_service.service.EventClient;
 import com.tickets.ticket_service.service.TicketService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.tickets.ticket_service.domain.Constant.DEFAULT_PAGE_NUMBER;
+import static com.tickets.ticket_service.domain.Constant.DEFAULT_PAGE_SIZE;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
 
-    private static final String NULL_USER_ID = "null";
-    private static final String DEFAULT_USER_ID = "anonymous";
-
     private final TicketRepository ticketRepository;
-    private final EventService eventService;
-    private final SeatService seatService;
-    private final LocalUserService localUserService;
+    private final EventClient eventClient;
+    private final TicketMapper ticketMapper;
 
     @Override
     @Transactional
     public TicketResponse createTicket(TicketRequest request) {
+        EventResponse eventResponse = eventClient.getEventById(request.eventId());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = "anonymous";
-
-        if (authentication instanceof JwtAuthenticationToken jwtToken) {
-            userId = jwtToken.getName();
-        } else {
-            log.warn("Authentication is not a JwtAuthenticationToken");
-        }
-
-        if (userId.equals(NULL_USER_ID) || userId.equals(DEFAULT_USER_ID) || userId.isEmpty()) {
-            throw new TicketServiceException("The user is not authenticated");
-        }
-        Event event = eventService.getEventById(request.eventId());
-        Seat seat = seatService.createSeat(
-                event.getHall().getId(),
+        boolean exists = ticketRepository.existsByEventIdAndRowAndSeatAndStatus(
+                request.eventId(),
                 request.row(),
-                request.seat()
+                request.seat(),
+                TicketStatus.ACTIVE
         );
-        LocalUser user = localUserService.getUserByKeycloakId(userId);
 
+        if (exists) {
+            throw new TicketServiceException("Ticket already exists for the given event, row, and seat.");
+        }
 
         Ticket ticket = Ticket.builder()
-                .event(event)
-                .seat(seat)
-                .user(user)
-                .status(TicketStatus.ACTIVE)
+                .eventId(eventResponse.id())
+                .row(request.row())
+                .seat(request.seat())
                 .purchaseDate(LocalDateTime.now())
-
+                .holderFullName(request.firstName() + " " + request.lastName())
+                .status(TicketStatus.ACTIVE)
                 .build();
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
-        return mapToTicketResponse(savedTicket);
+        return ticketMapper.toDto(savedTicket, eventResponse);
     }
 
     @Override
-    public TicketResponse getTicketById(Long id) {
-        Ticket ticket = ticketRepository.findById(id)
+    public Ticket getTicketById(Long id) {
+        return ticketRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ticket not found with id: " + id));
+    }
 
-        return mapToTicketResponse(ticket);
+
+    @Override
+    public TicketResponse getTicketResponseById(Long id) {
+        Ticket ticket = getTicketById(id);
+        EventResponse eventResponse = eventClient.getEventById(ticket.getEventId());
+
+        return ticketMapper.toDto(ticket, eventResponse);
     }
 
     @Override
-    public Page<TicketResponse> getTicketsByUserId(String userId, Pageable pageable) {
-        return ticketRepository.findByUserId(userId, pageable)
-                .map(this::mapToTicketResponse);
+    public Page<TicketResponse> getTicketsByUserId(String userId) {
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
+        return ticketRepository.findByHolderFullNameContaining(userId, pageable)
+                .map(ticket -> {
+                    EventResponse eventResponse = eventClient.getEventById(ticket.getEventId());
+                    return ticketMapper.toDto(ticket, eventResponse);
+                });
+
     }
 
     @Override
-    public Page<TicketResponse> getTicketsByEventId(Long eventId, Pageable pageable) {
+    public Page<TicketResponse> getTicketsByEventId(Long eventId) {
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
         return ticketRepository.findByEventId(eventId, pageable)
-                .map(this::mapToTicketResponse);
+                .map(ticket -> {
+                    EventResponse eventResponse = eventClient.getEventById(ticket.getEventId());
+                    return ticketMapper.toDto(ticket, eventResponse);
+                });
+
     }
 
     @Override
     @Transactional
     public void deleteTicket(Long id) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Ticket not found with id: " + id));
+        Ticket ticket = getTicketById(id);
 
         ticketRepository.delete(ticket);
-    }
-
-    private TicketResponse mapToTicketResponse(Ticket ticket) {
-        return TicketResponse.builder()
-                .id(ticket.getId())
-                .eventId(ticket.getEvent().getId())
-                .eventTitle(ticket.getEvent().getTitle())
-                .hallId(ticket.getEvent().getHall().getId())
-                .hallName(ticket.getEvent().getHall().getName())
-                .eventTime(ticket.getEvent().getStartDateTime())
-                .purchaseDate(ticket.getPurchaseDate())
-                .row(ticket.getSeat().getRowNumber())
-                .seat(ticket.getSeat().getSeatNumber())
-                .holderFullName(ticket.getUser().getFirstName() + " " + ticket.getUser().getLastName())
-                .ticketStatus(ticket.getStatus().name())
-                .build();
-
     }
 }
