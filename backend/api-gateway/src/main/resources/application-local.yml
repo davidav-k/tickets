@@ -18,9 +18,11 @@ spring:
             - Path=/api/tickets/**
           filters:
             - StripPrefix=1
+            - name: SecurityContextRelay
         - id: event-service
           uri: http://localhost:8092
           predicates:
             - Path=/api/events/**
           filters:
             - StripPrefix=1
+            - name: SecurityContextRelay

@@ -46,8 +46,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponse getEventResponseById(Long id) {
         Event event = getEventById(id);
-        EventResponse dto = eventMapper.toDto(event);
-        return dto;
+        return eventMapper.toDto(event);
     }
 
 

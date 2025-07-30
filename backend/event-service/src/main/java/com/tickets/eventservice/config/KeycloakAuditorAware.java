@@ -2,36 +2,29 @@ package com.tickets.eventservice.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Optional;
 
-/** KeycloakAuditorAware implementation for Spring Data JPA auditing.
- * This class retrieves the current authenticated user's ID from Keycloak
- * and provides it as the auditor for auditing purposes.
+/** KeycloakAuditorAware is used to provide the current auditor's information
+ * for auditing purposes in the application.
+ * It retrieves the user ID from the authentication details if available.
  */
 
 
 @Component
 public class KeycloakAuditorAware implements AuditorAware<String> {
-
     @Override
     public @NotNull Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated() ||
-            authentication instanceof AnonymousAuthenticationToken) {
-            return Optional.empty();
+        if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication.getDetails() instanceof Map<?, ?> details) {
+                return Optional.ofNullable((String) details.get("userId"));
+            }
         }
-
-        if (authentication instanceof JwtAuthenticationToken) {
-            return Optional.of(authentication.getName());
-        }
-
         return Optional.empty();
     }
 }

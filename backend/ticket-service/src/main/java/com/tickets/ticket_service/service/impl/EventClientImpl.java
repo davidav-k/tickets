@@ -14,18 +14,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class EventClientImpl implements EventClient {
 
-    private final WebClient eventWebClient;
+    private final WebClient eventServiceClient;
 
     @Override
     public EventResponse getEventById(Long eventId) {
-        log.debug("Requesting event data for ID: {}", eventId);
-        return eventWebClient.get()
-                .uri("/{id}", eventId)
+        return eventServiceClient.get()
+                .uri("/events/{id}", eventId)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<ApiResponse<EventResponse>>() {
                 })
                 .map(ApiResponse::data)
-                .block(); // todo: exchange for reactive approach (async)
+                .block();
     }
 
 }
