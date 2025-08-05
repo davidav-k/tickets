@@ -34,3 +34,8 @@ spring:
             - name: SecurityContextRelay
               args:
                 gatewaySecret: ${gateway.secret}
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.oauth2: TRACE
+    org.springframework.boot.autoconfigure.security: TRACE

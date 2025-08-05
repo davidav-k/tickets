@@ -30,34 +30,45 @@ public class CustomSecurityContextFilter extends OncePerRequestFilter {
     private final UserSyncService userSyncService;
 
     @Value("${gateway.secret}")
-    String gatewaySecretFromApp;
+    String GATEWAY_SECRET;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException {
+        log.info("gateway secret: {} vs {}", GATEWAY_SECRET, request.getHeader("X-Gateway-Secret"));
         String gatewaySecret = request.getHeader("X-Gateway-Secret");
-        if (gatewaySecretFromApp.equals(gatewaySecret)) {
+        if (!GATEWAY_SECRET.equals(gatewaySecret)) {
             log.error("Invalid gateway secret: {}", gatewaySecret);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
 
         String userId = request.getHeader("X-User-Id");
         String username = request.getHeader("X-Username");
         String email = request.getHeader("X-Email");
         String roles = request.getHeader("X-Roles");
 
+        log.debug("Received X-Roles header: '{}'", roles);
+
         if (userId != null && username != null && roles != null) {
             List<SimpleGrantedAuthority> authorities = Arrays.stream(roles.split(","))
-                    .map(SimpleGrantedAuthority::new)
+                    .filter(role -> role != null && !role.trim().isEmpty())
+                    .map(role -> {
+                        String cleanRole = role.trim();
+                        log.debug("Processing role: '{}'", cleanRole);
+                        return new SimpleGrantedAuthority(cleanRole);
+                    })
                     .collect(Collectors.toList());
+
+            log.debug("Created authorities: {}", authorities);
+
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     username, null, authorities);
-            auth.setDetails(Map.of("userId", userId, "email", email));
+            auth.setDetails(Map.of("userId", userId, "email", email != null ? email : ""));
             SecurityContextHolder.getContext().setAuthentication(auth);
             userSyncService.syncUserFromHeaders(userId, username, email);
         } else {
+            log.warn("Missing required headers: userId={}, username={}, roles={}", userId, username, roles);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
