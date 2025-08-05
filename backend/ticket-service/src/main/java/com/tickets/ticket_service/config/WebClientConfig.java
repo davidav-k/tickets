@@ -19,26 +19,23 @@ public class WebClientConfig {
     private String gatewayUrl;
 
     @Bean
-    public WebClient eventServiceClient(WebClient.Builder builder) {
-        return builder
-                .baseUrl(gatewayUrl)
+    public WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8092")
                 .filter((request, next) -> {
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    if (authentication != null) {
-                        Object details = authentication.getDetails();
-                        if (details instanceof Map) {
-                            Map<String, String> detailsMap = (Map<String, String>) details;
-                            String userId = detailsMap.get("userId");
-
-                            ClientRequest newRequest = ClientRequest.from(request)
-                                    .header("X-User-Id", userId)
-                                    .header("X-Username", authentication.getName())
-                                    .header("X-Roles", authentication.getAuthorities().stream()
-                                            .map(GrantedAuthority::getAuthority)
-                                            .collect(Collectors.joining(",")))
-                                    .build();
-                            return next.exchange(newRequest);
-                        }
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    if (auth != null) {
+                        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
+                        String userId = (String) details.get("userId");
+                        String username = auth.getPrincipal().toString();
+                        String roles = String.join(",", auth.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()));
+                        return next.exchange(ClientRequest.from(request)
+                                .header("X-User-Id", userId)
+                                .header("X-Username", username)
+                                .header("X-Roles", roles)
+                                .build());
                     }
                     return next.exchange(request);
                 })

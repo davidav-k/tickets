@@ -75,6 +75,10 @@ services:
 #      - keycloak_net
 #    depends_on:
 #      - keycloak
+#      - ticket-service
+#      - event-service
+#    environment:
+#      - SPRING_CONFIG_IMPORT=optional:file:../../.env
 
 #  ticket-service:
 #    container_name: ticket-service

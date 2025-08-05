@@ -1,13 +1,19 @@
 package com.tickets.ticket_service.config;
 
+
+import com.tickets.ticket_service.service.UserSyncService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -16,20 +22,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Custom security filter to extract user information from request headers
- * and set it in the SecurityContext.
- * This filter is used to authenticate users based on custom headers
- * instead of traditional session or token-based authentication.
- */
 
-
+@Component
+@Slf4j
+@RequiredArgsConstructor
 public class CustomSecurityContextFilter extends OncePerRequestFilter {
+
+    private final UserSyncService userSyncService;
+
+    @Value("${gateway.secret}")
+    String GATEWAY_SECRET;
+
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException {
+        String gatewaySecret = request.getHeader("X-Gateway-Secret");
+        if (!GATEWAY_SECRET.equals(gatewaySecret)) {
+            log.error("Invalid gateway secret: {}", gatewaySecret);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+
         String userId = request.getHeader("X-User-Id");
         String username = request.getHeader("X-Username");
+        String email = request.getHeader("X-Email");
         String roles = request.getHeader("X-Roles");
 
         if (userId != null && username != null && roles != null) {
@@ -38,8 +55,9 @@ public class CustomSecurityContextFilter extends OncePerRequestFilter {
                     .collect(Collectors.toList());
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     username, null, authorities);
-            auth.setDetails(Map.of("userId", userId));
+            auth.setDetails(Map.of("userId", userId, "email", email));
             SecurityContextHolder.getContext().setAuthentication(auth);
+            userSyncService.syncUserFromHeaders(userId, username, email);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
