@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:9090/realms/tickets
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/tickets}
       client:
         registration:
           keycloak:
@@ -16,4 +16,4 @@ spring:
             authorization-grant-type: authorization_code
         provider:
           keycloak:
-            issuer-uri: http://host.docker.internal:9090/realms/tickets
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/tickets}

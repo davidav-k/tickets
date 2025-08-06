@@ -28,7 +28,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: true
     ports:
-      - "9090:8080"
+      - "9090:8080" # Maps to http://keycloak:8080 inside Docker network
 #    volumes:
 #      - ./infrastructure/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
@@ -79,7 +79,7 @@ services:
 #      - event-service
 #    environment:
 #      - SPRING_CONFIG_IMPORT=optional:file:../../.env
-
+#
 #  ticket-service:
 #    container_name: ticket-service
 #    build:
@@ -92,11 +92,30 @@ services:
 #      - keycloak
 #    environment:
 #      SPRING_DATASOURCE_URL: jdbc:postgresql://ticket-db:5432/tickets
-#      SPRING_DATASOURCE_USERNAME: ticket_user
-#      SPRING_DATASOURCE_PASSWORD: ticket_password
+#      SPRING_DATASOURCE_USERNAME: ${TICKET_DB_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${TICKET_DB_PASSWORD}
 #      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/tickets
 #    networks:
 #      - keycloak_net
+#
+#  event-service:
+#    container_name: event-service
+#    build:
+#      context: ./backend/event-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8092:8092"
+#    depends_on:
+#      - event-db
+#      - keycloak
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://ticket-db:5432/tickets
+#      SPRING_DATASOURCE_USERNAME: ${EVENT_DB_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${EVENT_DB_PASSWORD}
+#      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/tickets
+#    networks:
+#      - keycloak_net
+
 
 volumes:
   postgres_data:

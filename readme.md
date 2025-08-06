@@ -1,11 +1,13 @@
-# Tickets Service - v0.2.01
+# Tickets Service - v0.2.02
 
 ## Overview
 Tickets is a microservice-based application for managing event ticket sales with a focus on security, scalability, and event-driven architecture.
 
-## Features in v0.2.01
+## Features in v0.2.02
 This release includes:
-
+- Centralized API gateway for routing requests
+- Standardized API response format
+- OpenAPI/Swagger documentation
 - User authentication via Keycloak
 - JWT token validation
 - Role-based access control (ADMIN, CASHIER, USER)

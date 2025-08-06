@@ -1,5 +1,12 @@
 package com.tickets.eventservice.domain;
 
+/**
+ * This class contains constant values used throughout the application.
+
+ */
+
+
+
 public class Constant {
 
     public static final int DEFAULT_PAGE_NUMBER = 0;

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/events/halls")
+@RequestMapping("/halls")
 @RequiredArgsConstructor
 public class HallController {
 
@@ -31,9 +31,7 @@ public class HallController {
         log.info("Creating a new hall named: {}", request.name());
         HallResponse hallResponse = hallService.saveHall(request);
 
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
+        return ResponseEntity.status(201)
                 .body(ApiResponse.success("/tickets/halls", "Hall created successfully", hallResponse));
 
     }

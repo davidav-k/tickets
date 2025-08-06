@@ -9,8 +9,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/tickets
-          jwk-set-uri: http://localhost:9090/realms/tickets/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/tickets}
+          jwk-set-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/tickets}/protocol/openid-connect/certs
           jwk-set-cache: true
 
   cloud:
@@ -29,6 +29,15 @@ spring:
           uri: http://localhost:8092
           predicates:
             - Path=/api/events/**
+          filters:
+            - StripPrefix=1
+            - name: SecurityContextRelay
+              args:
+                gatewaySecret: ${gateway.secret}
+        - id: hall-service
+          uri: http://localhost:8092
+          predicates:
+            - Path=/api/halls/**
           filters:
             - StripPrefix=1
             - name: SecurityContextRelay

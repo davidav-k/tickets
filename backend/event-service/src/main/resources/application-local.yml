@@ -12,9 +12,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/tickets
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/tickets}
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
-    org.springframework.boot.autoconfigure.security: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.oauth2: TRACE
+    org.springframework.boot.autoconfigure.security: TRACE

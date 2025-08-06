@@ -13,6 +13,7 @@ import com.tickets.ticket_service.service.TicketService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,20 @@ public class TicketServiceImpl implements TicketService {
     public TicketResponse createTicket(TicketRequest request) {
         EventResponse eventResponse = eventClient.getEventById(request.eventId());
 
+        if (eventResponse == null) {
+            throw new TicketServiceException("Event with ID " + request.eventId() + " not found.");
+        }
+
+        int totalRows = eventResponse.hallResponse().totalRows();
+        int totalSeatsPerRow = eventResponse.hallResponse().totalSeatsPerRow();
+        if (request.row() < 1 || request.row() > totalRows) {
+            throw new TicketServiceException("Row number " + request.row() + " is invalid. Must be between 1 and " + totalRows);
+        }
+        if (request.seat() < 1 || request.seat() > totalSeatsPerRow) {
+            throw new TicketServiceException("Seat number " + request.seat() + " is invalid. Must be between 1 and " + totalSeatsPerRow);
+        }
+
+
         boolean exists = ticketRepository.existsByEventIdAndRowAndSeatAndStatus(
                 request.eventId(),
                 request.row(),
@@ -45,9 +60,14 @@ public class TicketServiceImpl implements TicketService {
                 TicketStatus.ACTIVE
         );
 
-        if (exists) {
-            throw new TicketServiceException("Ticket already exists for the given event, row, and seat.");
-        }
+if (exists) {
+    throw new TicketServiceException(
+            MessageFormatter.arrayFormat(
+                    "Ticket already exists for eventId={}, row={}, seat={}",
+                    new Object[]{request.eventId(), request.row(), request.seat()}
+            ).getMessage()
+    );
+}
 
         Ticket ticket = Ticket.builder()
                 .eventId(eventResponse.id())

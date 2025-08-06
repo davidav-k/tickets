@@ -1,4 +1,4 @@
-package com.tickets.eventservice.domain;
+package com.tickets.api_gateway.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,13 +6,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
-
-/**
- * Represents a generic API response structure.
- *
- * @param <T> the type of data included in the response
- */
-
 
 @Schema(description = "Generic API response structure")
 @JsonInclude(JsonInclude.Include.NON_NULL)

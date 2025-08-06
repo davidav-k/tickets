@@ -28,7 +28,7 @@ public class EventController {
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(@Valid @RequestBody EventRequest eventRequest) {
         log.info("Creating a new event: {}", eventRequest.title());
         EventResponse eventResponse = eventService.saveEvent(eventRequest);
-        return ResponseEntity.ok(
+        return ResponseEntity.status(201).body(
                 ApiResponse.success("/api/events", "Event created successfully", eventResponse)
         );
     }
