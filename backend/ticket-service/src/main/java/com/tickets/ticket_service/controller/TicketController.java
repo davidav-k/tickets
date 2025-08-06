@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +41,8 @@ public class TicketController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
     public ResponseEntity<ApiResponse<TicketResponse>> getTicketById(@PathVariable Long id) {
-
-        TicketResponse ticket = ticketService.getTicketById(id);
+        log.info("Fetching ticket with ID: {}", id);
+        TicketResponse ticket = ticketService.getTicketResponseById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets/" + id, "Ticket found", ticket)
         );
@@ -52,11 +51,9 @@ public class TicketController {
     @Schema(description = "Request to get all tickets by user ID with pagination")
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER') or #userId == authentication.principal.id")
-    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByUserId(
-            @PathVariable String userId,
-            Pageable pageable
-    ) {
-        Page<TicketResponse> tickets = ticketService.getTicketsByUserId(userId, pageable);
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByUserId(@PathVariable String userId) {
+        log.info("Fetching tickets for user with ID: {}", userId);
+        Page<TicketResponse> tickets = ticketService.getTicketsByUserId(userId);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets/user/" + userId, "Tickets found for user", tickets)
         );
@@ -65,11 +62,9 @@ public class TicketController {
     @Schema(description = "Request to get all tickets by event ID with pagination")
     @GetMapping("/event/{eventId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER') or hasRole('USER')")
-    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByEventId(
-            @PathVariable Long eventId,
-            Pageable pageable
-    ) {
-        Page<TicketResponse> tickets = ticketService.getTicketsByEventId(eventId, pageable);
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTicketsByEventId(@PathVariable Long eventId) {
+        log.info("Fetching tickets for event with ID: {}", eventId);
+        Page<TicketResponse> tickets = ticketService.getTicketsByEventId(eventId);
         return ResponseEntity.ok(
                 ApiResponse.success("/api/tickets/event/" + eventId, "Tickets found for event", tickets)
         );

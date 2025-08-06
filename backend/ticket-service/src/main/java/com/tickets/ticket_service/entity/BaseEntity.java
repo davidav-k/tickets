@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 /**
- * Base entity with UUID identifier, timestamps for creation and update.
+ * Base entity with identifier, timestamps for creation and update.
  * All JPA entities in the system inherit from this class.
  */
 @MappedSuperclass

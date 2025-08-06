@@ -1,18 +1,22 @@
-# Tickets Service - v0.1.0-beta
+# Tickets Service - v0.2.02
 
 ## Overview
 Tickets is a microservice-based application for managing event ticket sales with a focus on security, scalability, and event-driven architecture.
 
-## Features in v0.1.0-beta
-This beta release focuses on establishing the security infrastructure:
-
+## Features in v0.2.02
+This release includes:
+- Centralized API gateway for routing requests
+- Standardized API response format
+- OpenAPI/Swagger documentation
 - User authentication via Keycloak
 - JWT token validation
-- Role-based access control
-- Basic API gateway routing
-- Initial ticket service functionality
-- Role-based access control for ticket management
-- Frontend authentication flow
+- Role-based access control (ADMIN, CASHIER, USER)
+- API gateway with security context relay
+- Service-to-service secure communication
+- Ticket service with CRUD operations
+- Event service integration
+- Microservice security with custom filters
+- Cross-service user synchronization
 
 ## System Requirements
 - Docker and Docker Compose
@@ -21,14 +25,16 @@ This beta release focuses on establishing the security infrastructure:
 
 ## Installation and Setup
 
-
-1. Start the infrastructure services:
+1. Create a `.env` file in the root directory with the example content in file `.env.example`. 
+This file contains environment variables for the services.
+2. Start the infrastructure services:
    ```bash
    docker-compose up --build
    ```
-2. Run the local services:
+3. Run the local services:
    - API Gateway
    - Ticket Service
+   - Event Service
 
 ## Services
 
@@ -40,6 +46,7 @@ This beta release focuses on establishing the security infrastructure:
 | PostgreSQL (tickets)    | -                      | 5432 | Tickets database                     |
 | API Gateway             | http://localhost:8088  | 8088 | Routing and security                |
 | Ticket Service          | http://localhost:8091  | 8091 | Core ticket functionality           |
+| Event Service           | http://localhost:8092  | 8092 | Event management                    |
 | Vue Frontend            | http://localhost:5173  | 5173 | User interface                      |
 
 ## Test Users
@@ -50,15 +57,27 @@ This beta release focuses on establishing the security infrastructure:
 | cashier@tickets.local  | Password123  | ROLE_CASHIER |
 | user@tickets.local     | Password123  | ROLE_USER    |
 
-## Current Limitations
-- Limited ticket management functionality
-- No payment processing
-- No notification service integration
-- Basic frontend with authentication only
+## Authentication Flow
+- Users authenticate through the API Gateway using Keycloak
+- API Gateway validates JWT tokens and extracts user roles
+- User context is propagated to microservices via secure headers
+- Microservices validate headers and enforce permissions
+
+## Service-to-Service Communication
+- Services communicate using WebClient
+- Security context is propagated between services
+- Gateway secret validates inter-service communication
+- User roles and permissions are maintained across service boundaries
+
+## Current Features
+- Complete authentication flow
+- Role-based access control
+- Ticket creation and management
+- Event lookup and integration
+- User synchronization across services
+- Secure inter-service communication
 
 ## Upcoming Features
-- Frontend UI
-- Complete ticket CRUD operations
 - Payment processing
 - Email notifications
 - Ticket scanning and validation
@@ -73,6 +92,7 @@ tickets/
 ├── backend/
 │   ├── api-gateway/
 │   ├── ticket-service/
+│   ├── event-service/
 │   ├── cashier-service/ (planned)
 │   ├── notification-service/ (planned)
 │   └── scanner-service/ (planned)
