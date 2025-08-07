@@ -127,4 +127,14 @@ if (exists) {
 
         ticketRepository.delete(ticket);
     }
+
+    @Override
+    public Page<TicketResponse> getAllTickets(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ticketRepository.findAll(pageable)
+                .map(ticket -> {
+                    EventResponse eventResponse = eventClient.getEventById(ticket.getEventId());
+                    return ticketMapper.toDto(ticket, eventResponse);
+                });
+    }
 }

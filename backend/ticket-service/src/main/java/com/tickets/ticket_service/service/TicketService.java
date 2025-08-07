@@ -28,5 +28,5 @@ public interface TicketService {
 
     void deleteTicket(Long id);
 
-
+    Page<TicketResponse> getAllTickets(int page, int size);
 }

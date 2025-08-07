@@ -37,6 +37,20 @@ public class TicketController {
         );
     }
 
+    @Schema(description = "Request to get all tickets with pagination")
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getAllTickets(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        log.info("Fetching all tickets with pagination: page={}, size={}", page, size);
+        Page<TicketResponse> tickets = ticketService.getAllTickets(page, size);
+        return ResponseEntity.ok(
+                ApiResponse.success("/api/tickets", "Tickets found", tickets)
+        );
+    }
+
+
     @Schema(description = "Request to get a ticket by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CASHIER')")
