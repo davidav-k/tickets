@@ -1,0 +1,38 @@
+---
+description: Description and structure of the project "tickets"
+alwaysApply: false
+---
+# Project: tickets
+A ticketing system for events built as a microservice application.
+## Architecture
+Java 17
+Spring Boot 3.3
+Kafka 7.x
+Keycloak 26.2
+PostgreSQL 16.1
+Spring Security 6
+Spring Kafka 3.3
+Confluent Kafka 7.4.0
+Keycloak — user authorization and authentication (via Docker)
+PostgreSQL — for Keycloak needs
+PostgreSQL — local user and ticket database
+PostgreSQL — local user, event, and room database
+Spring Boot microservices:
+- `api-gateway` — routing, security (JWT)
+- `ticket-service` — ticket logic
+- `event-service` — event and room logic
+- `cashier-service`
+- `notification-service`
+- `scanner-service` 
+- Kafka — used for event architecture (sale, cancellation, notifications)
+- Vue frontend — user interface
+- Centralized logging
+## Ports
+Keycloak 9090
+PostgreSQL for keycloak 5543
+API Gateway 8088
+Ticket Service 8091
+Event Service 8092
+PostgreSQL for Ticket Service 5432
+PostgreSQL for Event Service 5532
+Vue frontend 5173
